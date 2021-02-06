@@ -4,12 +4,18 @@ type Result<T> = std::result::Result<T, Rejection>;
 
 #[tokio::main]
 async fn main() {
-    let health_route = warp::path!("health").and_then(health_handler);
+    // let health_route = warp::path!("health").and_then(health_handler);
 
-    let routes = health_route.with(warp::cors().allow_any_origin());
+    // let routes = health_route.with(warp::cors().allow_any_origin());
+
+    // GET /hello/warp => 200 OK with body "Hello, warp!"
+    let hello = warp::path!("hello" / String)
+        .map(|name| format!("Hello, {}!", name));
+
+    let hello_route = hello.with(warp::cors().allow_any_origin());
 
     println!("Started server at localhost:8000");
-    warp::serve(routes).run(([0, 0, 0, 0], 8000)).await;
+    warp::serve(hello_route).run(([0, 0, 0, 0], 8000)).await;
 }
 
 async fn health_handler() -> Result<impl Reply> {
